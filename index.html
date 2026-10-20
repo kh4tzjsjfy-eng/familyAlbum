@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>李旻泽 · 家庭相册</title>
+  <link rel="stylesheet" href="css/lightbox.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "PingFang SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+      background: linear-gradient(160deg, #fdf6ee 0%, #f7efe4 50%, #f2e8da 100%);
+      color: #4a3f35;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 56px 20px 32px;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: #3d3229;
+    }
+    header .divider {
+      width: 56px; height: 3px;
+      background: #c9a86a;
+      margin: 18px auto;
+      border-radius: 2px;
+    }
+    header p {
+      font-size: 0.95rem;
+      color: #8a7a68;
+      letter-spacing: 0.06em;
+    }
+    .gallery {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 12px 24px 64px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 22px;
+    }
+    .gallery a {
+      display: block;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(74, 63, 53, 0.14);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      background: #fff;
+    }
+    .gallery a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 28px rgba(74, 63, 53, 0.22);
+    }
+    .gallery img {
+      width: 100%;
+      height: 100%;
+      min-height: 320px;
+      object-fit: cover;
+      display: block;
+    }
+    footer {
+      text-align: center;
+      padding: 24px 20px 40px;
+      font-size: 0.82rem;
+      color: #a49482;
+      letter-spacing: 0.05em;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>李旻泽 · 家庭相册</h1>
+    <div class="divider"></div>
+    <p>初修片精选 · 2023 年冬</p>
+  </header>
+
+  <div class="gallery">
+    <a href="photos/JN5D9730.jpg" data-lightbox="family" data-title="小牛仔与马 · 户外">
+      <img src="photos/JN5D9730.jpg" alt="小牛仔与马">
+    </a>
+    <a href="photos/JN5D9668.jpg" data-lightbox="family" data-title="墨镜大笑 · 棚拍">
+      <img src="photos/JN5D9668.jpg" alt="墨镜大笑">
+    </a>
+    <a href="photos/DSC_7570.jpg" data-lightbox="family" data-title="抱着相册的孩子">
+      <img src="photos/DSC_7570.jpg" alt="抱着相册的孩子">
+    </a>
+    <a href="photos/DSC_7531.jpg" data-lightbox="family" data-title="彩色墙前的托腮">
+      <img src="photos/DSC_7531.jpg" alt="彩色墙前的托腮">
+    </a>
+  </div>
+
+  <footer>Family Album · 用 Lightbox2 搭建 · 点击照片可放大浏览</footer>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/lightbox.min.js"></script>
+  <script>
+    lightbox.option({
+      resizeDuration: 200,
+      wrapAround: true,
+      albumLabel: "第 %1 张 / 共 %2 张"
+    });
+  </script>
+</body>
+</html>
