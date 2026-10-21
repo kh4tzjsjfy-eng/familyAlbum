@@ -85,7 +85,7 @@
 
     header {
       text-align: center;
-      padding: 56px 20px 32px;
+      padding: 56px 20px 28px;
     }
     header h1 {
       font-size: 2rem;
@@ -104,39 +104,70 @@
       color: #8a7a68;
       letter-spacing: 0.06em;
     }
+
+    /* ===== 瀑布流布局 ===== */
     .gallery {
       max-width: 1080px;
       margin: 0 auto;
-      padding: 12px 24px 64px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 22px;
+      padding: 16px 22px 56px;
+      column-width: 460px;   /* 宽屏约 2 列，窄屏自动降为 1 列 */
+      column-gap: 20px;
     }
     .gallery a {
       display: block;
+      width: 100%;
+      margin: 0 0 20px;        /* 照片之间留空隙 */
+      break-inside: avoid;     /* 防止卡片被分栏截断 */
+      position: relative;
       border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 6px 18px rgba(74, 63, 53, 0.14);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
       background: #fff;
+      box-shadow: 0 6px 20px rgba(74, 63, 53, 0.12);
+      transition: transform 0.32s ease, box-shadow 0.32s ease;
     }
     .gallery a:hover {
       transform: translateY(-5px);
-      box-shadow: 0 12px 28px rgba(74, 63, 53, 0.22);
+      box-shadow: 0 16px 36px rgba(74, 63, 53, 0.22);
     }
     .gallery img {
       width: 100%;
-      height: 100%;
-      min-height: 320px;
-      object-fit: cover;
+      height: auto;            /* 保留原始比例，不再裁切 */
       display: block;
+      transition: transform 0.55s cubic-bezier(0.2, 0.7, 0.3, 1);
     }
+    .gallery a:hover img {
+      transform: scale(1.06);  /* 悬停时照片微微放大 */
+    }
+    /* 悬停标题 */
+    .gallery .cap {
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      padding: 26px 18px 16px;
+      font-size: 0.92rem;
+      letter-spacing: 0.05em;
+      color: #fff;
+      background: linear-gradient(to top, rgba(61, 50, 41, 0.78), rgba(61, 50, 41, 0));
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.32s ease, transform 0.32s ease;
+      pointer-events: none;
+    }
+    .gallery a:hover .cap {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     footer {
       text-align: center;
       padding: 24px 20px 40px;
       font-size: 0.82rem;
       color: #a49482;
       letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 560px) {
+      .gallery { column-width: auto; column-count: 1; }
+      header h1 { font-size: 1.6rem; }
     }
   </style>
 </head>
@@ -163,19 +194,23 @@
     <div class="gallery">
       <a href="photos/JN5D9730.jpg" data-lightbox="family" data-title="小牛仔与马 · 户外">
         <img src="photos/JN5D9730.jpg" alt="小牛仔与马">
+        <span class="cap">小牛仔与马 · 户外</span>
       </a>
       <a href="photos/JN5D9668.jpg" data-lightbox="family" data-title="墨镜大笑 · 棚拍">
         <img src="photos/JN5D9668.jpg" alt="墨镜大笑">
+        <span class="cap">墨镜大笑 · 棚拍</span>
       </a>
       <a href="photos/DSC_7570.jpg" data-lightbox="family" data-title="抱着相册的孩子">
         <img src="photos/DSC_7570.jpg" alt="抱着相册的孩子">
+        <span class="cap">抱着相册的孩子</span>
       </a>
       <a href="photos/DSC_7531.jpg" data-lightbox="family" data-title="彩色墙前的托腮">
         <img src="photos/DSC_7531.jpg" alt="彩色墙前的托腮">
+        <span class="cap">彩色墙前的托腮</span>
       </a>
     </div>
 
-    <footer>Family Album · 用 Lightbox2 搭建 · 点击照片可放大浏览</footer>
+    <footer>Family Album · 点击照片可放大，手机端可左右滑动切换</footer>
   </div>
 
   <script>
@@ -215,6 +250,41 @@
       wrapAround: true,
       albumLabel: "第 %1 张 / 共 %2 张"
     });
+
+    /* 移动端：在 Lightbox 大图查看模式下，左右滑动切换上一张 / 下一张 */
+    (function () {
+      var startX = null, startY = null, swiping = false;
+
+      function lightboxOpen() {
+        var lb = document.querySelector(".lightbox");
+        return lb && getComputedStyle(lb).display !== "none";
+      }
+      function visible(el) {
+        return el && el.offsetParent !== null;
+      }
+
+      document.addEventListener("touchstart", function (e) {
+        if (!lightboxOpen()) return;
+        var t = e.touches[0];
+        startX = t.clientX; startY = t.clientY; swiping = true;
+      }, { passive: true });
+
+      document.addEventListener("touchend", function (e) {
+        if (!swiping || startX === null) return;
+        swiping = false;
+        var t = e.changedTouches[0];
+        var dx = t.clientX - startX;
+        var dy = t.clientY - startY;
+        startX = startY = null;
+        if (!lightboxOpen()) return;
+        // 仅当横向滑动明显大于纵向时才切换，避免误触
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (e.cancelable) e.preventDefault();
+          var btn = document.querySelector(dx < 0 ? ".lb-next" : ".lb-prev");
+          if (visible(btn)) btn.click();
+        }
+      });
+    })();
   </script>
 </body>
 </html>
