@@ -13,6 +13,76 @@
       color: #4a3f35;
       min-height: 100vh;
     }
+
+    /* ===== 密码验证遮罩层 ===== */
+    #gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #fdf6ee 0%, #efe2cf 100%);
+    }
+    .gate-card {
+      width: min(90vw, 360px);
+      background: #fff;
+      border-radius: 18px;
+      padding: 38px 30px 32px;
+      text-align: center;
+      box-shadow: 0 18px 50px rgba(74, 63, 53, 0.20);
+    }
+    .gate-card h2 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #3d3229;
+      margin-bottom: 6px;
+    }
+    .gate-card .sub {
+      font-size: 0.85rem;
+      color: #9a8a77;
+      margin-bottom: 22px;
+    }
+    .gate-card input {
+      width: 100%;
+      padding: 13px 16px;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 0.18em;
+      border: 1.5px solid #e2d4be;
+      border-radius: 10px;
+      outline: none;
+      color: #4a3f35;
+      transition: border-color 0.2s ease;
+    }
+    .gate-card input:focus { border-color: #c9a86a; }
+    .gate-card button {
+      width: 100%;
+      margin-top: 16px;
+      padding: 13px 0;
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: #fff;
+      background: #c9a86a;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .gate-card button:hover { background: #b8965a; }
+    .gate-err {
+      min-height: 18px;
+      margin-top: 14px;
+      font-size: 0.82rem;
+      color: #c0392b;
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== 相册内容（验证前隐藏） ===== */
+    #content { display: none; }
+    #content.unlocked { display: block; }
+
     header {
       text-align: center;
       padding: 56px 20px 32px;
@@ -71,28 +141,71 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>李旻泽 · 家庭相册</h1>
-    <div class="divider"></div>
-    <p>初修片精选 · 2023 年冬</p>
-  </header>
-
-  <div class="gallery">
-    <a href="photos/JN5D9730.jpg" data-lightbox="family" data-title="小牛仔与马 · 户外">
-      <img src="photos/JN5D9730.jpg" alt="小牛仔与马">
-    </a>
-    <a href="photos/JN5D9668.jpg" data-lightbox="family" data-title="墨镜大笑 · 棚拍">
-      <img src="photos/JN5D9668.jpg" alt="墨镜大笑">
-    </a>
-    <a href="photos/DSC_7570.jpg" data-lightbox="family" data-title="抱着相册的孩子">
-      <img src="photos/DSC_7570.jpg" alt="抱着相册的孩子">
-    </a>
-    <a href="photos/DSC_7531.jpg" data-lightbox="family" data-title="彩色墙前的托腮">
-      <img src="photos/DSC_7531.jpg" alt="彩色墙前的托腮">
-    </a>
+  <!-- 密码验证遮罩层 -->
+  <div id="gate">
+    <div class="gate-card">
+      <h2>家庭相册</h2>
+      <div class="sub">请输入访问密码</div>
+      <input id="pwd" type="password" inputmode="numeric" placeholder="••••" autocomplete="off" autofocus>
+      <button id="enter">进 入</button>
+      <div class="gate-err" id="err"></div>
+    </div>
   </div>
 
-  <footer>Family Album · 用 Lightbox2 搭建 · 点击照片可放大浏览</footer>
+  <!-- 相册内容 -->
+  <div id="content">
+    <header>
+      <h1>李旻泽 · 家庭相册</h1>
+      <div class="divider"></div>
+      <p>初修片精选 · 2023 年冬</p>
+    </header>
+
+    <div class="gallery">
+      <a href="photos/JN5D9730.jpg" data-lightbox="family" data-title="小牛仔与马 · 户外">
+        <img src="photos/JN5D9730.jpg" alt="小牛仔与马">
+      </a>
+      <a href="photos/JN5D9668.jpg" data-lightbox="family" data-title="墨镜大笑 · 棚拍">
+        <img src="photos/JN5D9668.jpg" alt="墨镜大笑">
+      </a>
+      <a href="photos/DSC_7570.jpg" data-lightbox="family" data-title="抱着相册的孩子">
+        <img src="photos/DSC_7570.jpg" alt="抱着相册的孩子">
+      </a>
+      <a href="photos/DSC_7531.jpg" data-lightbox="family" data-title="彩色墙前的托腮">
+        <img src="photos/DSC_7531.jpg" alt="彩色墙前的托腮">
+      </a>
+    </div>
+
+    <footer>Family Album · 用 Lightbox2 搭建 · 点击照片可放大浏览</footer>
+  </div>
+
+  <script>
+    (function () {
+      var PASSWORD = "1024";
+      var gate = document.getElementById("gate");
+      var content = document.getElementById("content");
+      var input = document.getElementById("pwd");
+      var err = document.getElementById("err");
+
+      function unlock() {
+        if (input.value === PASSWORD) {
+          gate.style.display = "none";
+          content.classList.add("unlocked");
+          err.textContent = "";
+          input.value = "";
+        } else {
+          err.textContent = "密码错误，请重新输入";
+          input.value = "";
+          input.focus();
+        }
+      }
+
+      document.getElementById("enter").addEventListener("click", unlock);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") { e.preventDefault(); unlock(); }
+      });
+      input.focus();
+    })();
+  </script>
 
   <script src="js/jquery.min.js"></script>
   <script src="js/lightbox.min.js"></script>
